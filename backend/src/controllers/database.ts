@@ -1,6 +1,6 @@
 // database.ts
 
-import { createPool, type Pool, type PoolOptions } from 'mysql2/promise';
+import { createPool, createConnection, type Pool, type PoolOptions } from 'mysql2/promise';
 
 
 // service :MySql@localhost:3306
@@ -20,12 +20,18 @@ let pool: Pool;
  * Initializes the MySQL Connection Pool.
  * @returns The initialized Pool instance.
  */
-export async function initializeDatabasePool() {
-    if (!pool) {
-        console.log('Initializing database connection pool...');
+export async function initializeDatabasePool(): Promise<Pool | undefined> {
+    if (pool) return pool;
+
+    console.log('Initializing database connection pool...');
+
+    const maxAttempts = Number(process.env.DB_INIT_RETRIES) || 5;
+    const initialDelayMs = 500;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
         try {
             // Check if database exists, if not create it
-            const connection = await require('mysql2/promise').createConnection({
+            const connection = await createConnection({
                 host: config.host,
                 user: config.user,
                 password: config.password,
@@ -35,13 +41,23 @@ export async function initializeDatabasePool() {
 
             pool = createPool(config);
             console.log('Database pool successfully created.');
+            return pool;
         } catch (error) {
-            console.error('Failed to initialize database pool:', error);
-            // In a real application, you might want to exit the process here
-            process.exit(1);
+            console.error(`Attempt ${attempt} - Failed to initialize database pool:`, error);
+            if (attempt < maxAttempts) {
+                const delay = Math.min(30000, initialDelayMs * 2 ** (attempt - 1));
+                console.log(`Retrying database init in ${delay}ms...`);
+                await new Promise((resolve) => setTimeout(resolve, delay));
+                continue;
+            }
+            console.error('Exceeded max DB init attempts. Continuing without DB pool.');
+            // Don't exit here: allow the server to start in a degraded mode so healthchecks or infra
+            // tooling can see the process and we can handle DB errors at request-time.
+            return undefined;
         }
     }
-    return pool;
+
+    return undefined;
 }
 
 /**
