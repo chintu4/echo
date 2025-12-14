@@ -1,0 +1,38 @@
+{
+  "name": "bun-react-template",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun --hot src/index.tsx",
+    "start": "NODE_ENV=production bun src/index.tsx",
+    "build": "bun run build.ts",
+    "lint": "eslint \"src/**/*.{ts,tsx,js,jsx}\" --max-warnings=0",
+    "format": "prettier --write .",
+    "test": "vitest -c vitest.config.ts",
+    "test:watch": "vitest -c vitest.config.ts --watch"
+  },
+  "dependencies": {
+    "bun-plugin-tailwind": "^0.0.15",
+    "react": "^19",
+    "react-dom": "^19",
+    "react-router-dom": "^7.10.1",
+    "tailwindcss": "^4.1.11"
+  },
+  "devDependencies": {
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/bun": "latest",
+    "vitest": "^1.0.0",
+    "@testing-library/react": "^15.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "jsdom": "^22.1.0",
+    "eslint": "^8.50.0",
+    "prettier": "^2.9.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "eslint-config-prettier": "^8.0.0",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-testing-library": "^5.10.3"
+  }
+}

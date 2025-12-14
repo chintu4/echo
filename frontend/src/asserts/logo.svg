@@ -1,0 +1,19 @@
+<svg
+  width="200"
+  height="200"
+  viewBox="0 0 200 200"
+  xmlns="http://www.w3.org/2000/svg"
+  role="img"
+  aria-label="Echo logo"
+>
+  <!-- Background rounded square -->
+  <rect x="10" y="10" width="180" height="180" rx="40" fill="#6b46c1" />
+
+  <!-- Speech bubble -->
+  <path d="M60 70 q40 -36 80 0 v30 q0 10 -10 10 h-20 l-24 18 v-18 h-26 q-10 0 -10 -10 z" fill="#fff" />
+
+  <!-- Echo ripples -->
+  <path d="M90 95 q18 -16 36 0" stroke="#6b46c1" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.9" />
+  <path d="M98 107 q10 -9 20 0" stroke="#6b46c1" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.8" />
+  <circle cx="86" cy="88" r="4" fill="#6b46c1" />
+</svg>
