@@ -30,17 +30,32 @@ function Layout() {
   );
 }
 
+// frontend/src/App.tsx (replace existing export)
 export function App() {
+  const getBasename = () => {
+    // prefer a <base href="..."> if present (useful for Pages)
+    const baseTag = document.querySelector("base")?.getAttribute("href");
+    if (baseTag && baseTag !== "/") return baseTag.replace(/\/$/, "");
+    // Don't infer basename from current location — visiting a deeper route
+    // (like "/login") would incorrectly set basename to that segment and
+    // prevent routes from matching. Default to root.
+    return "/";
+  };
+
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={getBasename()}>
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        <Route element={<Layout />}>
-          <Route path="/" element={<MainPanel />} />
-          <Route path="/profile" element={<ProfilePanel />} />
+        {/* Layout is anchored at the root and uses nested relative routes */}
+        <Route path="/" element={<Layout />}>
+          <Route index element={<MainPanel />} />
+          <Route path="profile" element={<ProfilePanel />} />
         </Route>
+
+        {/* Top-level fallback for any unmatched route (SPA friendly) */}
+        <Route path="*" element={<MainPanel />} />
       </Routes>
     </BrowserRouter>
   );

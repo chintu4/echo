@@ -22,7 +22,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/mysql": "^2.15.27",
     "eslint": "^8.50.0",
-    "prettier": "^2.9.0",
+    "prettier": "^2.8.8",
     "vitest": "^1.0.0",
     "supertest": "^6.4.0",
     "@types/supertest": "^2.0.12",
