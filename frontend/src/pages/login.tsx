@@ -1,6 +1,6 @@
 import { useRef, type FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
+import url from "../../../backend/src/controllers/config";
 export function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -11,15 +11,17 @@ export function LoginPage() {
         e.preventDefault();
         setLoading(true);
         try {
-            const res = await fetch("http://localhost:5000/login", {
+            const res = await fetch(`${url}/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password })
             });
             if (res.ok) {
                 const data = await res.json();
-                if (data.token) {
-                    localStorage.setItem("token", data.token);
+                // backend returns { accessToken }, but older clients expect { token }
+                const token = data.token ?? data.accessToken;
+                if (token) {
+                    localStorage.setItem("token", token);
                     navigate("/");
                     return;
                 }

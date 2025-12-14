@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import type { ReactNode } from "react";
+import url from "../../../backend/src/controllers/config";
 
 const Logo = () => (
     <svg viewBox="0 0 24 24" aria-hidden="true" className="h-8 w-8 text-white fill-current" role="img" aria-label="Echo logo">
@@ -55,7 +56,7 @@ export function LeftPanel({ children }: { children?: ReactNode }) {
                     {localStorage.getItem('token') ? (
                         <button onClick={async () => {
                             try {
-                                await fetch('http://localhost:5000/logout', { method: 'POST', credentials: 'include' });
+                                await fetch(`${url}/logout`, { method: 'POST', credentials: 'include' });
                             } catch (e) {
                                 // ignore
                             }

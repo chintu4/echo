@@ -1,5 +1,5 @@
 import { type ReactNode, useState, useEffect } from "react";
-
+import url from "../../../backend/src/controllers/config";
 export function ProfilePanel({ children }: { children?: ReactNode }) {
     const [open, setOpen] = useState(false);
     const [email, setEmail] = useState("");
@@ -22,7 +22,7 @@ export function ProfilePanel({ children }: { children?: ReactNode }) {
         }
 
         try {
-            const res = await fetch("http://localhost:5000/profile", {
+            const res = await fetch(`${url}/profile`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
                 body: JSON.stringify({ email: email || undefined, password: password || undefined, name: name || undefined, bio: bio || undefined, location: location || undefined, website: website || undefined })
@@ -48,7 +48,7 @@ export function ProfilePanel({ children }: { children?: ReactNode }) {
             const token = localStorage.getItem('token');
             const headers: any = {};
             if (token) headers.Authorization = `Bearer ${token}`;
-            const res = await fetch('http://localhost:5000/profile', { headers });
+            const res = await fetch(`${url}/profile`, { headers });
             if (res.status === 401) {
                 return false;
             }

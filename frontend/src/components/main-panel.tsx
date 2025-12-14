@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, type ReactNode } from "react";
+import url from "../../../backend/src/controllers/config";
 
 interface Post {
     id: number;
@@ -19,7 +20,7 @@ function ThreeDotMenu({ postId, onDeleted }: { postId: number; onDeleted: () => 
         }
         if (!confirm("Delete this post?")) return;
         try {
-            const res = await fetch(`http://localhost:5000/post/${postId}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
+            const res = await fetch(`${url}/post/${postId}`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
             if (res.ok) {
                 onDeleted();
             } else {
@@ -92,7 +93,7 @@ export function MainPanel({ children }: { children?: ReactNode }) {
 
     const fetchPosts = async () => {
         try {
-            const res = await fetch("http://localhost:5000/post");
+            const res = await fetch(`${url}/post`);
             const data = await res.json();
             if (data.posts) {
                 // Reverse to show newest first if the API doesn't sort
@@ -164,7 +165,7 @@ export function MainPanel({ children }: { children?: ReactNode }) {
         setLoading(true);
         try {
             // Using "User" as title since backend requires it
-            await fetch("http://localhost:5000/post", {
+            await fetch(`${url}/post`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
                 body: JSON.stringify({ title: "User", body: tweet })
