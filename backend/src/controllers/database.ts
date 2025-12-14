@@ -5,8 +5,8 @@ import { createPool, createConnection, type Pool, type PoolOptions } from 'mysql
 
 // service :MySql@localhost:3306
 const config: PoolOptions = {
-    host: process.env.DB_HOST || 'mysql-34fa7228-chintusharma00014-44f1.l.aivencloud.com',
-    user: process.env.DB_USER || 'avnadmin',
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || 'PASSWORD',
     database: process.env.DB_NAME || 'test',
     port: (() => {
