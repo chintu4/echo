@@ -41,6 +41,10 @@ export function SignupPage() {
                         <button type="submit" disabled={loading} className="bg-[#6b46c1] text-white font-bold rounded-full py-2 px-4">{loading ? 'Creating...' : 'Create account'}</button>
                         <button type="button" onClick={() => navigate('/login')} className="bg-transparent border border-[#536471] text-white font-bold rounded-full py-2 px-4">Back to sign in</button>
                     </div>
+
+                    <div className="text-[#71767b] text-sm mt-2">
+                        <a onClick={() => navigate('/')} className="text-[#6b46c1] hover:underline cursor-pointer">Back to feed</a>
+                    </div>
                 </form>
             </div>
         </div>

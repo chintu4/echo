@@ -31,14 +31,16 @@ export function LeftPanel({ children }: { children?: ReactNode }) {
     const isLoggedIn = Boolean(localStorage.getItem('token'));
 
     return (
-        <div className="flex flex-col h-full px-2">
-            <div className="py-4 xl:ml-3">
-                <Link to="/" className="inline-block p-3 rounded-full hover:bg-[#181818] transition-colors">
-                    <Logo />
-                </Link>
-            </div>
+        <div className="flex flex-col px-2 h-screen overflow-visible">
+            {/* Keep the left panel visible while the feed scrolls */}
+            <div className="sticky top-4 self-start z-20 transform-gpu" style={{ willChange: 'transform' }}>
+                <div className="py-4 xl:ml-3">
+                    <Link to="/" className="inline-block p-3 rounded-full hover:bg-[#181818] transition-colors">
+                        <Logo />
+                    </Link>
+                </div>
 
-            <nav className="flex flex-col gap-2 mt-2">
+                <nav className="flex flex-col gap-2 mt-2">
                 <Link to="/" className="flex items-center gap-4 p-3 rounded-full hover:bg-[#181818] transition-colors xl:pr-8 w-max xl:w-full">
                     <HomeIcon />
                     <span className="hidden xl:inline text-xl font-medium">Feed</span>
@@ -69,9 +71,9 @@ export function LeftPanel({ children }: { children?: ReactNode }) {
                         </Link>
                     )}
                 </div>
-            </nav>
+                </nav>
 
-            <Link to="/#compose" className="hidden xl:inline-block mt-8">
+                <Link to="/#compose" className="hidden xl:inline-block mt-8">
                 <div className="bg-[#6b46c1] text-white rounded-full py-4 px-8 font-bold text-lg hover:bg-[#5931a3] transition-colors shadow-lg text-center">Echo</div>
             </Link>
             <Link to="/#compose" className="xl:hidden inline-block mt-4" aria-label="New Echo">
@@ -79,6 +81,7 @@ export function LeftPanel({ children }: { children?: ReactNode }) {
                     <svg viewBox="0 0 24 24" className="h-6 w-6"><path fill="currentColor" d="M12 5v14M5 12h14" strokeWidth="2" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 </div>
             </Link>
+            </div>
         </div>
     );
 }

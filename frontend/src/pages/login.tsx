@@ -36,11 +36,13 @@ export function LoginPage() {
         <div className="min-h-screen flex items-center justify-center bg-black">
             <div className="w-full max-w-sm p-8">
                 <div className="flex justify-center mb-8">
-                    <svg viewBox="0 0 48 48" aria-hidden="true" className="h-12 w-12 text-white fill-current" role="img" aria-label="Echo logo">
-                        <rect x="3" y="3" width="42" height="42" rx="8" fill="#6b46c1" />
-                        <path d="M14 17 q8 -7 16 0 v6 q0 2 -2 2 h-4 l-4 2.8 v-2.8 h-6 q-2 0 -2 -2 z" fill="#fff" />
-                        <path d="M25 23 q6 -5 12 0" stroke="#6b46c1" strokeWidth="1.4" fill="none" strokeLinecap="round" opacity="0.95" />
-                    </svg>
+                    <Link to="/" aria-label="Go to feed" className="flex items-center gap-2">
+                        <svg viewBox="0 0 48 48" aria-hidden="true" className="h-12 w-12 text-white fill-current" role="img" aria-label="Echo logo">
+                            <rect x="3" y="3" width="42" height="42" rx="8" fill="#6b46c1" />
+                            <path d="M14 17 q8 -7 16 0 v6 q0 2 -2 2 h-4 l-4 2.8 v-2.8 h-6 q-2 0 -2 -2 z" fill="#fff" />
+                            <path d="M25 23 q6 -5 12 0" stroke="#6b46c1" strokeWidth="1.4" fill="none" strokeLinecap="round" opacity="0.95" />
+                        </svg>
+                    </Link>
                 </div>
                 <h1 className="text-3xl font-bold text-white mb-8">Sign in to Echo</h1>
 
@@ -76,6 +78,10 @@ export function LoginPage() {
 
                     <div className="text-[#71767b] text-sm mt-4">
                         Don't have an account? <Link to="/signup" className="text-[#6b46c1] cursor-pointer hover:underline">Create account</Link>
+                    </div>
+
+                    <div className="text-[#71767b] text-sm mt-2">
+                        <Link to="/" className="text-[#6b46c1] hover:underline">Back to feed</Link>
                     </div>
                 </form>
             </div>

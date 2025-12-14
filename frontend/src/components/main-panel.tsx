@@ -86,6 +86,9 @@ export function MainPanel({ children }: { children?: ReactNode }) {
     const [tweet, setTweet] = useState("");
     const [loading, setLoading] = useState(false);
     const [composeOpen, setComposeOpen] = useState(false);
+    const [edgeAnim, setEdgeAnim] = useState<null | 'top' | 'bottom'>(null);
+    const lastEdgeRef = useRef<null | 'top' | 'bottom'>(null);
+    const edgeTimeoutRef = useRef<number | null>(null);
 
     const fetchPosts = async () => {
         try {
@@ -109,6 +112,46 @@ export function MainPanel({ children }: { children?: ReactNode }) {
             // clear hash so it doesn't reopen
             window.history.replaceState(null, '', window.location.pathname + window.location.search);
         }
+    }, []);
+
+    useEffect(() => {
+        // Scroll handler to detect top/bottom edges and trigger small bounce animation
+        const THRESHOLD = 60; // px
+        let ticking = false;
+        const onScroll = () => {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(() => {
+                const scrollTop = window.scrollY || document.documentElement.scrollTop;
+                const winH = window.innerHeight;
+                const docH = document.documentElement.scrollHeight;
+
+                if (scrollTop <= THRESHOLD && lastEdgeRef.current !== 'top') {
+                    triggerEdge('top');
+                } else if (scrollTop + winH >= docH - THRESHOLD && lastEdgeRef.current !== 'bottom') {
+                    triggerEdge('bottom');
+                }
+                ticking = false;
+            });
+        };
+
+        const triggerEdge = (pos: 'top' | 'bottom') => {
+            lastEdgeRef.current = pos;
+            setEdgeAnim(pos);
+            if (edgeTimeoutRef.current) window.clearTimeout(edgeTimeoutRef.current);
+            // keep it from re-triggering for a short cooldown
+            edgeTimeoutRef.current = window.setTimeout(() => {
+                lastEdgeRef.current = null;
+            }, 700);
+            // clear animation state after the CSS animation finishes
+            window.setTimeout(() => setEdgeAnim(null), 350);
+        };
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => {
+            window.removeEventListener('scroll', onScroll);
+            if (edgeTimeoutRef.current) window.clearTimeout(edgeTimeoutRef.current);
+        };
     }, []);
 
     const handleTweet = async () => {
@@ -187,7 +230,7 @@ export function MainPanel({ children }: { children?: ReactNode }) {
             )}
 
             {/* Feed */}
-            <div className="flex flex-col">
+            <div className={`flex flex-col ${edgeAnim === 'top' ? 'edge-bounce-top feed-edge-fade-top' : ''} ${edgeAnim === 'bottom' ? 'edge-bounce-bottom feed-edge-fade-bottom' : ''}`}>
                 {posts.map((post) => (
                     <div key={post.id || Math.random()} className="p-4 mb-4 bg-[#0b0c0d] rounded-2xl shadow-sm border border-[#1f1f20] transition-colors flex gap-4 text-left relative">
                         {/* Three-dot menu */}

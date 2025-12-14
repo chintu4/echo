@@ -21,9 +21,11 @@ function Layout() {
 
       {/* Right Sidebar */}
       <div className="hidden lg:block w-[350px] pl-8 py-4">
-        <div className="bg-[#16181c] rounded-2xl p-4">
-          <h2 className="font-bold text-xl mb-4">What's happening</h2>
-          <div className="text-[#71767b]">Trending content would go here</div>
+        <div className="sticky top-4 self-start z-20 transform-gpu" style={{ willChange: 'transform' }}>
+          <div className="bg-[#16181c] rounded-2xl p-4">
+            <h2 className="font-bold text-xl mb-4">What's happening</h2>
+            <div className="text-[#71767b]">Trending content would go here</div>
+          </div>
         </div>
       </div>
     </div>
