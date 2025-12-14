@@ -1,4 +1,5 @@
 import { type ReactNode, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import url from "../../../backend/src/controllers/config";
 export function ProfilePanel({ children }: { children?: ReactNode }) {
     const [open, setOpen] = useState(false);
@@ -10,13 +11,14 @@ export function ProfilePanel({ children }: { children?: ReactNode }) {
     const [website, setWebsite] = useState("");
     const [joinedAt, setJoinedAt] = useState<string | null>(null);
     const postsCountLabel = '0 echoes';
+    const navigate = useNavigate();
 
     const handleSave = async () => {
         // Check for token
         const token = localStorage.getItem("token");
         if (!token) {
             if (confirm("You must be logged in to edit your profile. Go to login page?")) {
-                window.location.href = "/login";
+                navigate('/login');
             }
             return;
         }
@@ -74,7 +76,7 @@ export function ProfilePanel({ children }: { children?: ReactNode }) {
         const token = localStorage.getItem('token');
         if (!token) {
             if (confirm('You must be logged in to edit your profile. Go to login page?')) {
-                window.location.href = '/login';
+                navigate('/login');
             }
             return;
         }
@@ -83,7 +85,7 @@ export function ProfilePanel({ children }: { children?: ReactNode }) {
         if (!ok) {
             alert('Unable to load profile. Please log in again.');
             localStorage.removeItem('token');
-            window.location.href = '/login';
+            navigate('/login', { replace: true });
             return;
         }
         setOpen(true);

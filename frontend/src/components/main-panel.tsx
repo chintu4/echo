@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, type ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 import url from "../../../backend/src/controllers/config";
 
 interface Post {
@@ -10,12 +11,13 @@ interface Post {
 function ThreeDotMenu({ postId, onDeleted }: { postId: number; onDeleted: () => void }) {
     const [open, setOpen] = useState(false);
     const wrapperRef = useRef<HTMLDivElement | null>(null);
+    const navigate = useNavigate();
 
     const handleDelete = async (e: any) => {
         e.stopPropagation();
         const token = localStorage.getItem('token');
         if (!token) {
-            if (confirm('You must sign in to delete a post. Go to login?')) window.location.href = '/login';
+            if (confirm('You must sign in to delete a post. Go to login?')) navigate('/login');
             return;
         }
         if (!confirm("Delete this post?")) return;
@@ -87,6 +89,7 @@ export function MainPanel({ children }: { children?: ReactNode }) {
     const [tweet, setTweet] = useState("");
     const [loading, setLoading] = useState(false);
     const [composeOpen, setComposeOpen] = useState(false);
+    const navigate = useNavigate();
     // removed custom edge-bounce animation logic to avoid scroll shake
 
     const fetchPosts = async () => {
@@ -119,7 +122,7 @@ export function MainPanel({ children }: { children?: ReactNode }) {
         if (!tweet.trim()) return;
         const token = localStorage.getItem('token');
         if (!token) {
-            if (confirm('You must sign in to post. Go to login page?')) window.location.href = '/login';
+            if (confirm('You must sign in to post. Go to login page?')) navigate('/login');
             return;
         }
         setLoading(true);
@@ -159,7 +162,7 @@ export function MainPanel({ children }: { children?: ReactNode }) {
                         </button>
                     ) : (
                         <button
-                            onClick={() => { if (confirm('Sign in to create an Echo?')) window.location.href = '/login'; }}
+                            onClick={() => { if (confirm('Sign in to create an Echo?')) navigate('/login'); }}
                             className="w-full text-left bg-[#0b0c0d] border border-[#222425] rounded-full px-4 py-3 hover:bg-[#0f1113] transition-colors"
                         >
                             Sign in to share an Echo
@@ -215,19 +218,19 @@ export function MainPanel({ children }: { children?: ReactNode }) {
                             {/* Actions (Mock) */}
                             <div className="flex gap-6 mt-3 text-[#71767b]">
                                 <div className="flex items-center gap-2" title="Discuss">
-                                    <button onClick={() => { if (!localStorage.getItem('token')) { if (confirm('Sign in to react?')) window.location.href = '/login'; return; } alert('Discuss not implemented'); }} className="p-1">💭</button>
+                                    <button onClick={() => { if (!localStorage.getItem('token')) { if (confirm('Sign in to react?')) navigate('/login'); return; } alert('Discuss not implemented'); }} className="p-1">💭</button>
                                     <span className="text-xs">24</span>
                                 </div>
                                 <div className="flex items-center gap-2" title="Amplify">
-                                    <button onClick={() => { if (!localStorage.getItem('token')) { if (confirm('Sign in to react?')) window.location.href = '/login'; return; } alert('Amplify not implemented'); }} className="p-1">🔊</button>
+                                    <button onClick={() => { if (!localStorage.getItem('token')) { if (confirm('Sign in to react?')) navigate('/login'); return; } alert('Amplify not implemented'); }} className="p-1">🔊</button>
                                     <span className="text-xs">5</span>
                                 </div>
                                 <div className="flex items-center gap-2" title="Star">
-                                    <button onClick={() => { if (!localStorage.getItem('token')) { if (confirm('Sign in to react?')) window.location.href = '/login'; return; } alert('Star not implemented'); }} className="p-1">⭐</button>
+                                    <button onClick={() => { if (!localStorage.getItem('token')) { if (confirm('Sign in to react?')) navigate('/login'); return; } alert('Star not implemented'); }} className="p-1">⭐</button>
                                     <span className="text-xs">182</span>
                                 </div>
                                 <div className="flex items-center gap-2" title="Insights">
-                                    <button onClick={() => { if (!localStorage.getItem('token')) { if (confirm('Sign in to react?')) window.location.href = '/login'; return; } alert('Insights not implemented'); }} className="p-1">📈</button>
+                                    <button onClick={() => { if (!localStorage.getItem('token')) { if (confirm('Sign in to react?')) navigate('/login'); return; } alert('Insights not implemented'); }} className="p-1">📈</button>
                                     <span className="text-xs">1.2k</span>
                                 </div>
 
