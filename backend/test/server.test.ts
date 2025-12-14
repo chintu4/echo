@@ -37,4 +37,10 @@ d2('auth flows', () => {
         // refresh after logout -> should fail
         await agent.post('/refresh').expect(401);
     });
+
+    it2('anonymous cannot create post', async () => {
+        const agent2 = request.agent(app as any);
+        const res = await agent2.put('/post').send({ title: 'anon', body: 'nope' });
+        expect2(res.status).toBe(401);
+    });
 });

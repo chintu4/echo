@@ -24,15 +24,30 @@ class UserModel {
         `;
         await query(sql);
 
-        // Ensure columns exist for older databases (best-effort migration)
+        // Ensure columns exist for older databases (best-effort migration).
+        // Some MySQL versions do not support `ALTER TABLE ... ADD COLUMN IF NOT EXISTS`.
+        // Query INFORMATION_SCHEMA and only add missing columns to avoid syntax errors.
         try {
-            await query("ALTER TABLE users ADD COLUMN IF NOT EXISTS name VARCHAR(255)");
-            await query("ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT");
-            await query("ALTER TABLE users ADD COLUMN IF NOT EXISTS location VARCHAR(255)");
-            await query("ALTER TABLE users ADD COLUMN IF NOT EXISTS website VARCHAR(255)");
-            await query("ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
+            const cols = [
+                { name: 'name', sql: 'VARCHAR(255)' },
+                { name: 'bio', sql: 'TEXT' },
+                { name: 'location', sql: 'VARCHAR(255)' },
+                { name: 'website', sql: 'VARCHAR(255)' },
+                { name: 'created_at', sql: 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP' }
+            ];
+
+            for (const col of cols) {
+                const rows = await query(
+                    'SELECT COUNT(*) as cnt FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = DATABASE() AND table_name = ? AND column_name = ?',
+                    ['users', col.name]
+                ) as any;
+                const cnt = rows && rows[0] && (rows[0].cnt ?? Object.values(rows[0])[0]) || 0;
+                if (Number(cnt) === 0) {
+                    await query(`ALTER TABLE users ADD COLUMN ${col.name} ${col.sql}`);
+                }
+            }
         } catch (err) {
-            // Some MySQL versions may not support IF NOT EXISTS for ALTER; ignore errors
+            // Non-fatal; log so maintainers can inspect migration issues.
             console.warn('Migration warning (non-fatal):', err);
         }
     }

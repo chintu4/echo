@@ -5,7 +5,7 @@ import cookieParser from 'cookie-parser';
 import { initializeDatabasePool } from "./src/controllers/database";
 import UserModel from "./src/models/user";
 import PostModel from "./src/models/post";
-import { login, signup } from "./src/controllers/authController";
+import { login, signup, refresh, logout } from "./src/controllers/authController";
 import { createOrUpdatePost, getPosts, deletePost } from "./src/controllers/postController";
 import { getProfile, updateProfile, deleteProfile } from "./src/controllers/userController";
 

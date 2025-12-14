@@ -1,14 +1,7 @@
 {
   "name": "backend",
   "module": "server.ts",
-  "devDependencies": {
-    "@types/bcryptjs": "^3.0.0",
-    "@types/bun": "latest",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.6",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/mysql": "^2.15.27"
-  },
+  
   "peerDependencies": {
     "typescript": "^5"
   },
@@ -22,6 +15,12 @@
     "test:ci": "vitest -c tsconfig.test.json --run"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^3.0.0",
+    "@types/bun": "latest",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/mysql": "^2.15.27",
     "eslint": "^8.50.0",
     "prettier": "^2.9.0",
     "vitest": "^1.0.0",

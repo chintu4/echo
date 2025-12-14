@@ -50,10 +50,24 @@ export function LeftPanel({ children }: { children?: ReactNode }) {
                 </Link>
 
                 <div className="mt-auto pt-4">
-                    <button onClick={() => handleSignOut()} className="flex items-center gap-4 p-3 rounded-full hover:bg-[#181818] transition-colors xl:pr-8 w-max xl:w-full text-red-500">
-                        <LogoutIcon />
-                        <span className="hidden xl:inline text-xl font-medium">{(isLoggedIn)?("Sign out"):("Sign in")}</span>
-                    </button>
+                    {localStorage.getItem('token') ? (
+                        <button onClick={async () => {
+                            try {
+                                await fetch('http://localhost:5000/logout', { method: 'POST', credentials: 'include' });
+                            } catch (e) {
+                                // ignore
+                            }
+                            handleSignOut();
+                        }} className="flex items-center gap-4 p-3 rounded-full hover:bg-[#181818] transition-colors xl:pr-8 w-max xl:w-full text-red-500">
+                            <LogoutIcon />
+                            <span className="hidden xl:inline text-xl font-medium">Sign out</span>
+                        </button>
+                    ) : (
+                        <Link to="/login" className="flex items-center gap-4 p-3 rounded-full hover:bg-[#181818] transition-colors xl:pr-8 w-max xl:w-full text-green-400">
+                            <LogoutIcon />
+                            <span className="hidden xl:inline text-xl font-medium">Sign in</span>
+                        </Link>
+                    )}
                 </div>
             </nav>
 
