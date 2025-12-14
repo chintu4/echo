@@ -5,10 +5,14 @@ import { createPool, createConnection, type Pool, type PoolOptions } from 'mysql
 
 // service :MySql@localhost:3306
 const config: PoolOptions = {
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || 'root',
+    host: process.env.DB_HOST || 'mysql-34fa7228-chintusharma00014-44f1.l.aivencloud.com',
+    user: process.env.DB_USER || 'avnadmin',
+    password: process.env.DB_PASSWORD || 'PASSWORD',
     database: process.env.DB_NAME || 'test',
+    port: (() => {
+        const p = Number(process.env.DB_PORT);
+        return Number.isInteger(p) && p > 0 ? p : 3306;
+    })(),
     waitForConnections: true, // If connection limit is reached, wait for a connection to be released
     connectionLimit: 10,       // Max number of connections in the pool
     queueLimit: 0              // No limit for the connection queue
