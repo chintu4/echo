@@ -8,19 +8,19 @@ import "./index.css";
 
 function Layout() {
   return (
-    <div className="flex justify-center min-h-screen max-w-[1265px] mx-auto">
+    <div className="flex justify-center h-screen overflow-hidden max-w-[1265px] mx-auto">
       {/* Left Sidebar */}
-      <div className="w-[88px] xl:w-[275px]">
+      <div className="w-[88px] xl:w-[275px] h-full">
         <LeftPanel />
       </div>
 
       {/* Main Feed / Content */}
-      <div className="flex-1 max-w-[600px] border-r border-[#2f3336] min-h-screen border-l border-[#2f3336]">
+      <div className="flex-1 max-w-[600px] h-full overflow-y-auto overscroll-contain border-r border-[#2f3336] border-l border-[#2f3336]">
         <Outlet />
       </div>
 
       {/* Right Sidebar */}
-      <div className="hidden lg:block w-[350px] pl-8 py-4">
+      <div className="hidden lg:block w-[350px] pl-8 py-4 h-full">
         <div className="sticky top-4 self-start z-20 transform-gpu" style={{ willChange: 'transform' }}>
           <div className="bg-[#16181c] rounded-2xl p-4">
             <h2 className="font-bold text-xl mb-4">What's happening</h2>
