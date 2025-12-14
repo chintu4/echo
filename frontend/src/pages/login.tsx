@@ -1,6 +1,6 @@
 import { useRef, type FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import url from "../../../backend/src/controllers/config";
+import url from "../config";
 export function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");

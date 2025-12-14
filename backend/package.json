@@ -10,9 +10,9 @@
     "start": "NODE_ENV=production bun server.ts",
     "build": "bun run build.ts",
     "lint": "eslint \"src/**/*.{ts,js}\" --max-warnings=0",
-    "test": "vitest -c tsconfig.test.json",
-    "test:watch": "vitest -c tsconfig.test.json --watch",
-    "test:ci": "vitest -c tsconfig.test.json --run"
+    "test": "vitest --config vitest.config.ts",
+    "test:watch": "vitest --config vitest.config.ts --watch",
+    "test:ci": "vitest --config vitest.config.ts --run"
   },
   "devDependencies": {
     "@types/bcryptjs": "^3.0.0",

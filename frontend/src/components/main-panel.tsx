@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import url from "../../../backend/src/controllers/config";
+import url from "../config";
 
 interface Post {
     id: number;
     title: string;
     body: string;
+    user_handle?: string;
+    created_at?: string;
 }
 
 function ThreeDotMenu({ postId, onDeleted }: { postId: number; onDeleted: () => void }) {
@@ -107,13 +109,22 @@ export function MainPanel({ children }: { children?: ReactNode }) {
 
     useEffect(() => {
         fetchPosts();
+    }, []);
 
-        // Open compose modal if navigated with hash
-        if (window.location.hash === "#compose") {
-            setComposeOpen(true);
-            // clear hash so it doesn't reopen
-            window.history.replaceState(null, '', window.location.pathname + window.location.search);
-        }
+    useEffect(() => {
+        const handleHashChange = () => {
+            if (window.location.hash === "#compose") {
+                setComposeOpen(true);
+                // clear hash so it doesn't reopen
+                window.history.replaceState(null, '', window.location.pathname + window.location.search);
+            }
+        };
+
+        window.addEventListener('hashchange', handleHashChange);
+        // Also check on mount
+        handleHashChange();
+
+        return () => window.removeEventListener('hashchange', handleHashChange);
     }, []);
 
     // NOTE: Custom scroll-based edge bounce removed. Native overscroll is preferred.
@@ -127,14 +138,29 @@ export function MainPanel({ children }: { children?: ReactNode }) {
         }
         setLoading(true);
         try {
-            // Using "User" as title since backend requires it
-            await fetch(`${url}/post`, {
+            let title = "User";
+            if (token) {
+                try {
+                    const res = await fetch(`${url}/profile`, { headers: { Authorization: `Bearer ${token}` } });
+                    if (res.ok) {
+                        const data = await res.json();
+                        title = data.user?.name || title;
+                    }
+                } catch (e) {
+                    // ignore and fallback to default title
+                }
+            }
+
+            const res = await fetch(`${url}/post`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-                body: JSON.stringify({ title: "User", body: tweet })
+                body: JSON.stringify({ title, body: tweet })
             });
+            const data = await res.json().catch(() => ({}));
             setTweet("");
             fetchPosts();
+            // notify other parts of app (profile) that a post was created
+            window.dispatchEvent(new CustomEvent('postCreated', { detail: data.post }));
         } catch (error) {
             console.error("Error posting tweet:", error);
         } finally {
@@ -206,9 +232,9 @@ export function MainPanel({ children }: { children?: ReactNode }) {
                                 <div>
                                     <div className="flex items-center gap-2">
                                         <span className="font-semibold">{post.title}</span>
-                                        <span className="text-[#71767b] text-sm ml-2">@echo_user{post.id}</span>
+                                        <span className="text-[#71767b] text-sm ml-2">@{post.user_handle || `user${post.id}`}</span>
                                     </div>
-                                    <div className="text-[#71767b] text-xs mt-1">1 hour ago</div>
+                                    <div className="text-[#71767b] text-xs mt-1">{post.created_at ? new Date(post.created_at).toLocaleString() : '1 hour ago'}</div>
                                 </div>
                                 <div className="text-[#71767b] text-sm">·</div>
                             </div>

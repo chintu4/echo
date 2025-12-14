@@ -11,8 +11,10 @@ export const createOrUpdatePost = async (req: Request, res: Response) => {
     // Check if body has content to distinguish?
     if (req.body && req.body.title && req.body.body) {
         try {
-            await PostModel.create({ title: req.body.title, body: req.body.body });
-            res.status(201).json({ message: 'Post created successfully' });
+            const userId = (req as any).user?.id;
+            const created = await PostModel.create({ title: req.body.title, body: req.body.body, user_id: userId });
+            console.debug(`Created post ${created.id} for user ${userId}`);
+            res.status(201).json({ message: 'Post created successfully', post: created });
         } catch (error: any) {
             console.error("Error creating post:", error);
             res.status(500).json({ message: 'Error creating post', error: error.message || error });
@@ -25,15 +27,9 @@ export const createOrUpdatePost = async (req: Request, res: Response) => {
 
 export const getPosts = async (req: Request, res: Response) => {
     try {
-        await PostModel.findAll();
-        // The test expects 'Post created successfully' for get_post?? 
-        // No, that must be a typo in the test. 
-        // But 'test_get_post_by_id' expects 'Post fetched successfully'.
-        // Since both hit GET /post', we can't easily distinguish without parameters.
-        // I'll return 'Post fetched successfully' as it's more sane, and if the other test fails, so be it (or I fix the test).
-        // Actually, looking closely at the user request, the user MIGHT have copy-pasted the test code and errors.
-        // Let's stick to standard behavior.
-        res.status(200).json({ message: 'Post fetched successfully', posts: await PostModel.findAll() });
+        const userId = req.query.userId ? Number(req.query.userId) : undefined;
+        const posts = await PostModel.findAll(userId);
+        res.status(200).json({ message: 'Post fetched successfully', posts });
     } catch (error) {
         res.status(500).json({ message: 'Error fetching posts' });
     }

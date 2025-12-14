@@ -1,6 +1,6 @@
 import { type ReactNode, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import url from "../../../backend/src/controllers/config";
+import url from "../config";
 export function ProfilePanel({ children }: { children?: ReactNode }) {
     const [open, setOpen] = useState(false);
     const [email, setEmail] = useState("");
@@ -9,8 +9,9 @@ export function ProfilePanel({ children }: { children?: ReactNode }) {
     const [bio, setBio] = useState("");
     const [location, setLocation] = useState("");
     const [website, setWebsite] = useState("");
+    const [handle, setHandle] = useState("");
     const [joinedAt, setJoinedAt] = useState<string | null>(null);
-    const postsCountLabel = '0 echoes';
+    const [posts, setPosts] = useState<any[]>([]);
     const navigate = useNavigate();
 
     const handleSave = async () => {
@@ -24,15 +25,33 @@ export function ProfilePanel({ children }: { children?: ReactNode }) {
         }
 
         try {
+            // validate handle format if present: alphanumeric and underscores, 3-30 chars
+            if (handle && !/^[a-zA-Z0-9_]{3,30}$/.test(handle)) {
+                alert('Handle must be 3-30 characters and contain only letters, numbers, and underscores');
+                return;
+            }
+
             const res = await fetch(`${url}/profile`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-                body: JSON.stringify({ email: email || undefined, password: password || undefined, name: name || undefined, bio: bio || undefined, location: location || undefined, website: website || undefined })
+                body: JSON.stringify({ email: email || undefined, password: password || undefined, name: name || undefined, handle: handle || undefined, bio: bio || undefined, location: location || undefined, website: website || undefined })
             });
             if (res.ok) {
+                const data = await res.json().catch(() => ({}));
+                // If server returns the updated user, apply it immediately; otherwise
+                // fall back to refetching the profile.
+                if (data.user) {
+                    setName(data.user.name || 'User');
+                    setEmail(data.user.email || '');
+                    setHandle(data.user.handle || '');
+                    setBio(data.user.bio || '');
+                    setLocation(data.user.location || '');
+                    setWebsite(data.user.website || '');
+                } else {
+                    await fetchProfile();
+                }
                 alert("Profile updated successfully");
                 setOpen(false);
-                fetchProfile();
             } else if (res.status === 401) {
                 alert("Unauthorized. Please log in again.");
             } else {
@@ -56,17 +75,22 @@ export function ProfilePanel({ children }: { children?: ReactNode }) {
             }
             if (res.ok) {
                 const data = await res.json();
+                console.debug('Profile fetch response:', data);
                 const user = data.user || {};
+                console.debug('User handle:', user.handle);
                 setName(user.name || 'User');
                 setEmail(user.email || '');
+                setHandle(user.handle || '');
                 setBio(user.bio || '');
                 setLocation(user.location || '');
                 setWebsite(user.website || '');
                 setJoinedAt(user.created_at || null);
+                // set posts if present
+                setPosts(data.posts || []);
                 return true;
             }
         } catch (err) {
-            // ignore
+            console.error('Profile fetch error:', err);
         }
         return false;
     };
@@ -93,6 +117,14 @@ export function ProfilePanel({ children }: { children?: ReactNode }) {
 
     useEffect(() => {
         fetchProfile();
+
+        const onPostCreated = (e: any) => {
+            console.debug('postCreated event received, refreshing profile', e?.detail);
+            // if a post is included and belongs to this user, optionally prepend it
+            fetchProfile();
+        };
+        window.addEventListener('postCreated', onPostCreated as EventListener);
+        return () => window.removeEventListener('postCreated', onPostCreated as EventListener);
     }, []);
 
     return (
@@ -104,7 +136,7 @@ export function ProfilePanel({ children }: { children?: ReactNode }) {
                 </div>
                 <div>
                     <h1 className="text-xl font-bold leading-5">{name || 'User'}</h1>
-                    <span className="text-[#71767b] text-sm">{postsCountLabel || '0 echoes'}</span>
+                    <span className="text-[#71767b] text-sm">{posts.length} echoes</span>
                 </div>
             </div>
 
@@ -128,6 +160,7 @@ export function ProfilePanel({ children }: { children?: ReactNode }) {
                             <h3 className="text-lg font-bold mb-4">Edit profile</h3>
                             <div className="flex flex-col gap-3">
                                 <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Display name" className="bg-transparent border border-[#333639] rounded p-3 text-white placeholder-[#71767b] focus:outline-none" />
+                                <input value={handle} onChange={(e) => setHandle(e.target.value)} placeholder="Handle (e.g. user123)" className="bg-transparent border border-[#333639] rounded p-3 text-white placeholder-[#71767b] focus:outline-none" />
                                 <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="bg-transparent border border-[#333639] rounded p-3 text-white placeholder-[#71767b] focus:outline-none" />
                                 <textarea value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Bio" className="bg-transparent border border-[#333639] rounded p-3 text-white placeholder-[#71767b] focus:outline-none resize-none" rows={3} />
                                 <input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Location" className="bg-transparent border border-[#333639] rounded p-3 text-white placeholder-[#71767b] focus:outline-none" />
@@ -147,7 +180,7 @@ export function ProfilePanel({ children }: { children?: ReactNode }) {
 
                 <div className="mt-8">
                     <h2 className="text-xl font-bold font-white">{name || 'User'}</h2>
-                    <div className="text-[#71767b] mb-2">@echo_user</div>
+                    <div className="text-[#71767b] mb-2">{handle ? `@${handle}` : '@echo_user'}</div>
                     {bio && <div className="text-[#e7e9ea] mb-3">{bio}</div>}
                     <div className="flex gap-4 text-[#71767b] text-sm mb-4">
                         {location && <span>📍 {location}</span>}
@@ -171,8 +204,32 @@ export function ProfilePanel({ children }: { children?: ReactNode }) {
                 ))}
             </div>
 
-            <div className="p-8 text-center text-[#71767b]">
-                No posts yet.
+            <div className="p-4">
+                {posts.length === 0 ? (
+                    <div className="p-8 text-center text-[#71767b]">No Echoes yet. Be the first to share!</div>
+                ) : (
+                    <div className="flex flex-col">
+                        {posts.map((post) => (
+                            <div key={post.id || Math.random()} className="p-4 mb-4 bg-[#0b0c0d] rounded-2xl shadow-sm border border-[#1f1f20] transition-colors flex gap-4 text-left relative">
+                                <div className="h-12 w-12 rounded-full bg-gradient-to-br from-[#7c3aed] to-[#6b46c1] flex-shrink-0 flex items-center justify-center text-white font-bold">{post.title?.charAt(0) || 'U'}</div>
+                                <div className="flex-1 flex flex-col gap-2">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-semibold">{post.title}</span>
+                                                <span className="text-[#71767b] text-sm ml-2">{handle ? `@${handle}` : `@echo_user${post.id}`}</span>
+                                            </div>
+                                            <div className="text-[#71767b] text-xs mt-1">{post.created_at ? new Date(post.created_at).toLocaleString() : ''}</div>
+                                        </div>
+                                        <div className="text-[#71767b] text-sm">·</div>
+                                    </div>
+
+                                    <p className="text-[#e7e9ea] whitespace-pre-wrap mt-1">{post.body}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );

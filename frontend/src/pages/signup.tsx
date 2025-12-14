@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import url from "../../../backend/src/controllers/config";
+import url from "../config";
 
 export function SignupPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [name, setName] = useState("");
+    const [handle, setHandle] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -12,10 +14,17 @@ export function SignupPage() {
         e.preventDefault();
         setLoading(true);
         try {
+            // simple handle validation
+            if (handle && !/^[a-zA-Z0-9_]{3,30}$/.test(handle.replace(/^@/, '').trim())) {
+                alert('Handle must be 3-30 characters and contain only letters, numbers, and underscores');
+                setLoading(false);
+                return;
+            }
+
             const res = await fetch(`${url}/signup`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify({ email, password, name, handle: handle ? handle.replace(/^@/, '').trim() : undefined })
             });
             if (res.status === 201) {
                 alert("Account created. Please sign in.");
@@ -36,6 +45,8 @@ export function SignupPage() {
             <div className="w-full max-w-sm p-8">
                 <h1 className="text-3xl font-bold text-white mb-8">Create an Echo account</h1>
                 <form className="flex flex-col gap-4" onSubmit={handleSignup}>
+                            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Display name (optional)" className="bg-black border border-[#333639] rounded p-4 text-white" />
+                    <input value={handle} onChange={(e) => setHandle(e.target.value)} placeholder="@handle (optional)" className="bg-black border border-[#333639] rounded p-4 text-white" />
                     <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="bg-black border border-[#333639] rounded p-4 text-white" />
                     <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" placeholder="Password" className="bg-black border border-[#333639] rounded p-4 text-white" />
                     <div className="flex gap-3 mt-4">
