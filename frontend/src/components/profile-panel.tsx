@@ -99,7 +99,7 @@ export function ProfilePanel({ children }: { children?: ReactNode }) {
         <div className="flex flex-col w-full">
             {/* Header */}
             <div className="sticky top-0 z-10 bg-black/60 backdrop-blur-md px-4 py-3 border-b border-[#2f3336] flex items-center gap-6">
-                <div className="hover:bg-[#eff3f4]/10 rounded-full p-2 cursor-pointer transition-colors">
+                <div className="hover:bg-[#eff3f4]/10 rounded-full p-2 cursor-pointer transition-colors" onClick={() => navigate('/')}>
                     <svg viewBox="0 0 24 24" className="h-5 w-5 text-white"><path fill="currentColor" d="M7.414 13l5.043 5.04-1.414 1.42L3.586 12l7.457-7.46 1.414 1.42L7.414 11H21v2H7.414z"></path></svg>
                 </div>
                 <div>
