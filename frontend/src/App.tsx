@@ -38,9 +38,16 @@ export function App() {
     // prefer a <base href="..."> if present (useful for Pages)
     const baseTag = document.querySelector("base")?.getAttribute("href");
     if (baseTag && baseTag !== "/") return baseTag.replace(/\/$/, "");
-    // Don't infer basename from current location — visiting a deeper route
-    // (like "/login") would incorrectly set basename to that segment and
-    // prevent routes from matching. Default to root.
+    // When hosted on GitHub Pages the app may live under a repo subpath
+    // (e.g. https://<user>.github.io/echo/). If no <base> is provided, and
+    // we're running on github.io, infer the repo segment as the basename.
+    // This avoids broken links like `/login` pointing to the site root.
+    const host = window.location.hostname || '';
+    if (host.endsWith('github.io')) {
+      const parts = window.location.pathname.split('/').filter(Boolean);
+      if (parts.length > 0) return `/${parts[0]}`;
+    }
+    // Default to root for typical local dev or unknown hosts.
     return "/";
   };
 
