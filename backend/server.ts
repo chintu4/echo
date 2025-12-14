@@ -16,13 +16,17 @@ app.use(express.json());
 
 // Initialize Database
 try {
-    await initializeDatabasePool();
-    await UserModel.initTable();
-    await PostModel.initTable();
-    // Ensure refresh tokens table exists
-    const RefreshTokenModel = (await import('./src/models/refreshToken')).default;
-    await RefreshTokenModel.initTable();
-    console.log("Database initialized and table created");
+    const pool = await initializeDatabasePool();
+    if (pool) {
+        await UserModel.initTable();
+        await PostModel.initTable();
+        // Ensure refresh tokens table exists
+        const RefreshTokenModel = (await import('./src/models/refreshToken')).default;
+        await RefreshTokenModel.initTable();
+        console.log("Database initialized and table created");
+    } else {
+        console.warn('Database pool not available; skipping table initialization.');
+    }
 } catch (error) {
     console.error("Failed to initialize database:", error);
 }
