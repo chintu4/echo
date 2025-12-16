@@ -1,10 +1,10 @@
 # Echo — Full‑stack Example App 🧩
 
-A simple, well‑documented full‑stack project demonstrating an authenticated web app with a React frontend and a lightweight TypeScript backend. It showcases user authentication (JWT + refresh tokens), a user profile, and CRUD operations for a sample "post" entity. The repository includes both the frontend and the backend, tests, and developer-friendly configuration.
+A simple, full‑stack project demonstrating an authenticated web app with a React frontend and a lightweight TypeScript backend. It showcases user authentication (JWT + refresh tokens), a user profile, and CRUD operations for a sample "post" entity. The repository includes both the frontend and the backend, tests, and developer-friendly configuration.
 
 ---
 
-## Non‑technical summary 💡
+## Summary 💡
 
 Echo is a small web application that lets a user sign up, log in, and manage simple posts (create, read, update, delete). The app demonstrates a typical web product flow: a user-facing interface (frontend) talking to a server (backend) that stores data in a database. It's suitable as a learning project or a starting point for production-ready work.
 
